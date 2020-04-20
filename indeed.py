@@ -1,28 +1,28 @@
-import requests
+import requests 
+import csv
 from bs4 import BeautifulSoup
 
-req = requests.get("https://movie.naver.com/movie/running/current.nhn")
-if req.status_code !=200 :
-    print("failed",req.status_code) 
+req=requests.get("https://search.naver.com/search.naver?where=post&sm=tab_jum&query=%ED%8C%8C%EC%9D%B4%EC%8D%AC")
+html=req.text
+soup = BeautifulSoup(html,'html.parser')
 
-html = req.text
-bs = BeautifulSoup(html, "html.parser")
+title = soup.find_all(class_='sh_blog_title')
 
-box = bs.find_all("dl", class_="lst_dsc")
 
-ratio=[]
-title=[]
+sitetitle=[]
+address=[]
 
-for b in box :
-    ratio.append(b.find("div",class_="star_t1").find("span",class_="num").text)
-    title.append (b.find("dt", class_="tit").find("a").text)
+for j in title:
+    sitetitle.append(j.attrs['title'])
+    address.append(j.attrs['href'])
 
-movieInfo=[]
-for i in range(len(box)) :
-    movie=[]
-    movie.append(title[i])
-    movie.append(ratio[i])
-    movieInfo.append(movie) 
+print(sitetitle)
+print(address)
 
-for i in movieInfo:
-    print(i)
+
+file = open("naver.csv","w",newline="")
+
+wr = csv.writer(file)
+for i in range(len(address)) :
+    wr.writerow([str(i+1), sitetitle[i],address[i]])
+file.close
